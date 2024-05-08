@@ -30,6 +30,8 @@ To install the project dependencies, you can use the provided `Makefile`. Follow
 
 ```bash
 make install
+```
+
 ## Deliverables
 ### Unit Tests
 ### Formula for pricing a gauranteed VWAP contract
