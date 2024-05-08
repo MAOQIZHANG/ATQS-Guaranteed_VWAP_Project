@@ -6,7 +6,7 @@ Group members: Maoqi Zhang, Jiaying Chen, Yunlei Lu
 #### 1.Impact Model
 #### 2. Model Volume
 #### 3. Trading Policy
-#### 4. 
+#### 4. Reduction to functional policy
 
 ## Deliverables
 ### Unit Tests
