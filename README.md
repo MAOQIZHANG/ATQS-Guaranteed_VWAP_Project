@@ -1,5 +1,8 @@
 # ATQS-Gauranteed_VWAP_Project
-Project for ATQS
+Group members: Maoqi Zhang, Jiaying Chen, Yunlei Lu
+
+
+## Project Overview
 #### 1.Impact Model
 #### 2. Model Volume
 #### 3. Trading Policy
