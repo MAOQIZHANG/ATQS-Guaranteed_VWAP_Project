@@ -3,7 +3,7 @@ Group members: Maoqi Zhang, Jiaying Chen, Yunlei Lu
 
 
 ## Project Overview
-#### 1.Impact Model
+#### 1. Impact Model
 #### 2. Model Volume
 #### 3. Trading Policy
 #### 4. Reduction to functional policy
