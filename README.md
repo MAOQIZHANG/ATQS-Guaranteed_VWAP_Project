@@ -4,10 +4,14 @@ Group members: Maoqi Zhang, Jiaying Chen, Yunlei Lu
 
 ## Project Overview
 #### 1. Impact Model
-add decay parameter
+add decay parameter (in paper)
+
 #### 2. Model Volume
+
 #### 3. Trading Policy
+
 #### 4. Reduction to functional policy
+
 
 ## Project Structure
 
@@ -34,6 +38,8 @@ make install
 ```
 
 ## Deliverables
+Dollar price is most important
+
 ### Unit Tests
 ### Formula for pricing a gauranteed VWAP contract
 ### Statistical Analysis of our volume model
