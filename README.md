@@ -15,7 +15,7 @@ The project directory is organized as follows:
 - `/src`: Contains the source code of the project.
 - `/tests`: Contains unit tests for the project.
 - `/data`: Stores data files related to the project.
-- `/docs`: Holds documentation files for the project.
+- `/docs`: Holds documentation files (Analysis and Proofs) for the project.
 - `.gitignore`: Specifies files and directories that Git should ignore.
 - `requirements.txt`: Lists the project dependencies.
 - `Makefile`: Provides a target to install project dependencies automatically.
