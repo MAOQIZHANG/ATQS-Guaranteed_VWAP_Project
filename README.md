@@ -1,4 +1,4 @@
-# ATQS-Gauranteed_VWAP_Project
+# ATQS-Guaranteed_VWAP_Project
 Group members: Maoqi Zhang, Jiaying Chen, Yunlei Lu
 
 
