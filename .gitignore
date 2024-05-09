@@ -2,3 +2,4 @@ data/quotes
 data/trades
 .DS_Store
 __pycache__
+*.egg-info
