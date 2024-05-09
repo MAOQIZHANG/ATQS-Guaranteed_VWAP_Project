@@ -1,3 +1,4 @@
-/data
+data/quotes
+data/trades
 .DS_Store
 __pycache__

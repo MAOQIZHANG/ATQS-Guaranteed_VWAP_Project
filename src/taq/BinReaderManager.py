@@ -1,4 +1,5 @@
 from collections import deque
+
 class BinReaderManager:
     def __init__(self, binReaders: deque, processors: deque):
         self._binReaders = deque(binReaders)

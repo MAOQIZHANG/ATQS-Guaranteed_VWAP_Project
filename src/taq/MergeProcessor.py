@@ -5,6 +5,8 @@ from collections import deque
 from taq.BinReader import BinReader
 from taq.BinReaderManager import BinReaderManager
 from taq.MyDirectories import MyDirectories
+
+
 class MergeProcessor:
     def __init__(self, outFilePathName, writeFormat):
         self._out = gzip.open(outFilePathName, "wb")
