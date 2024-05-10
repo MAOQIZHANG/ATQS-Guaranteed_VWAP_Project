@@ -1,13 +1,14 @@
 import gzip
-import _struct
+import struct
 from collections import deque
+
 
 class BinReader(object):
     def __init__(self, filePathName, conversionFmt, bufSizeInRecs):
         self._last = None
-        self._recConv = _struct.Struct(conversionFmt)
+        self._recConv = struct.Struct(conversionFmt)
         # Calculate record size from conversion format
-        self._recSize = _struct.calcsize(conversionFmt)
+        self._recSize = struct.calcsize(conversionFmt)
         # Allocate buffer using rec size and number of
         # recs specified in constructor argument.
         self._buff = bytearray(bufSizeInRecs * self._recSize)
@@ -20,15 +21,17 @@ class BinReader(object):
         self._in = gzip.open(self._filePathName, "rb")
         # Create a converter for sequence numbers.
         # Our sequence number is always a long integer
-        self._snConv = _struct.Struct(">Q")
+        self._snConv = struct.Struct(">Q")
         # Create a deque for storing records that have
         # been read.
         self._recs = deque()
         # Read a full buffer of data, possibly millions
         # of bytes.
         self._readFullBuff()
+
     def getSN(self):
         return self._snConv.unpack_from(self._buff, self._bufOffst)[0]
+    
     def readThrough(self, sn):
         # V2 - Implement ALL, LAST, or applyFunc functionality to reduce object creation
         self._last = sn
@@ -38,17 +41,18 @@ class BinReader(object):
             if not self.hasNext():
                 break
         return self._recs
+    
     # Read data into our buffer
     def _readFullBuff(self):
         self._nBytesRead = self._in.readinto(self._buff)
         self._bufOffst = 0
         if self._nBytesRead < len(self._buff):
             self.close()
+
     def hasNext(self):
         return self._bufOffst < self._nBytesRead
-    # Process next record in our buffer or,
-    # if at end of buffer, read more data
-    # into buffer
+    
+    # Process next record in our buffer or, if at end of buffer, read more data into buffer
     def next(self):
         rec = self._recConv.unpack_from(self._buff, self._bufOffst)
         self._bufOffst = self._bufOffst + self._recSize
@@ -56,19 +60,24 @@ class BinReader(object):
             if self._nBytesRead == len(self._buff):
                 self._readFullBuff()
         return rec
+    
     def close(self):
         if self._in is not None:
             self._in.close()
             self._in = None
+
     # Get a deque of all records read
     def getRecs(self):
         return self._recs
+    
     # Return true if this reader has read through sn
     def hasRecs(self, sn):
         return self._last <= sn
+    
     # Write all recs to a specified binary file
     def writeTo(self, outFile):
         for rec in self._recs:
             outFile.write(self._recConv.pack(*rec))
+
     def getFilePathName(self):
         return self._filePathName

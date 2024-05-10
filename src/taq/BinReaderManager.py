@@ -4,6 +4,7 @@ class BinReaderManager:
     def __init__(self, binReaders: deque, processors: deque):
         self._binReaders = deque(binReaders)
         self._processors = deque(processors)
+        
     def run(self):
         while len(self._binReaders) > 0 and len(self._processors) > 0:
             # Initialize number of readers with records
