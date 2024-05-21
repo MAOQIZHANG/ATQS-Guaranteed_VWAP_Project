@@ -42,8 +42,11 @@ class TradingSimulation:
         
         for bin_idx in range(13):
             # Get the volume for the current bin
-            bin_volume = self.get_bin_volume(bin_idx)
+            bin_weights = self.volume_model.get_bin_estimates(use_static=True)
             
+            # TODO: bin_volume
+            bin_volume = None
+
             # Update volume model with the bin volume
             self.volume_model.save_bin_volume(bin_volume)
             
