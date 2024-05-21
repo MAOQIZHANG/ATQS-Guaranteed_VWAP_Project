@@ -3,3 +3,4 @@ data/trades
 .DS_Store
 __pycache__
 *.egg-info
+*.csv
