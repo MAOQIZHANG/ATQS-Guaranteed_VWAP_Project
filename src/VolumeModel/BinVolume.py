@@ -2,7 +2,7 @@ import numpy as np
 from taq.TAQTradesReader import TAQTradesReader
 
 
-# compute trading volume in each bin
+# compute bin trading volume for each trades reader
 class BinVolume:
     def __init__(
             self, 
@@ -12,7 +12,7 @@ class BinVolume:
             endTS = 16 * 60 * 60 * 1000  # 4PM
         ):
         numBuckets = int(np.ceil((endTS - startTS) / binLen))
-        self.volumes = [0.0] * numBuckets
+        self.volumes = np.array([0.0] * numBuckets, dtype=np.longlong)
         iBucket = -1
         for i in range(data.getN()):
             ts = data.getMillisFromMidn(i)
