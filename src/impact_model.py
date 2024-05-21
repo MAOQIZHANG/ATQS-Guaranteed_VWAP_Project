@@ -48,7 +48,7 @@ class ImpactModel:
         volatility = volatility.interpolate(axis=1)
         daily_value = daily_value.interpolate(axis=1)
 
-        self.df_h = volatility * self.eta * np.abs(1 / daily_value / (0.5/6.5)).pow(self.beta)
+        self.df_h = volatility * np.sqrt(1/13) * self.eta * np.abs(1 / daily_value / (0.5/6.5)).pow(self.beta)
     
     def cal_temp_impact(self, stock, date, value_imbalance):
 

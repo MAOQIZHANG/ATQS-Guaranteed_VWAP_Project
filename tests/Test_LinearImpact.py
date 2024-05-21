@@ -18,7 +18,7 @@ class Test_Impact(unittest.TestCase):
         hTest = ImpactModel('Impact-Model-Matrix')
         hTest.read_data()
 
-        self.assertAlmostEqual(1.8973326012031283e-06, hTest.cal_temp_impact('JAVA', 0, 10))
+        self.assertAlmostEqual(5.262253830959499e-07, hTest.cal_temp_impact('JAVA', 0, 10))
         self.assertEqual((502, 65), hTest.df_h.shape)
         # self.assertEqual(hTest.cal_temp_impact('JAVA', 0, 10.25 * 60 * 60 * 1000), hTest.cal_temp_impact('JAVA', 0, 10.75 * 60 * 60 * 1000))
         
