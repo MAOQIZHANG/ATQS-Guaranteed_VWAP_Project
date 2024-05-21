@@ -48,14 +48,13 @@ class ImpactModel:
         volatility = volatility.interpolate(axis=1)
         daily_value = daily_value.interpolate(axis=1)
 
-        self.df_h = volatility * np.sign(value_imbalance) * self.eta * np.abs(value_imbalance / daily_value / (6/6.5)).pow(self.beta)
+        self.df_h = volatility * self.eta * np.abs(1 / daily_value / (0.5/6.5)).pow(self.beta)
     
-    def cal_temp_impact(self, stock, date, TS):
-        h = self.df_h.loc[stock, self.df_h.columns[date]]
-        if TS % (30 * 60 * 1000) == 0:
-            return 0
-        else:
-            return (1 - TS % (30 * 60 * 1000) / 30) * h
+    def cal_temp_impact(self, stock, date, value_imbalance):
+
+        h = self.df_h.loc[stock, self.df_h.columns[date]] * np.sign(value_imbalance) * np.abs(value_imbalance) ** (self.beta)
+        
+        return h
 
 
 
@@ -63,4 +62,4 @@ class ImpactModel:
 # Create an instance of the model and call methods
 impact_model = ImpactModel('Impact-Model-Matrix')
 impact_model.read_data()
-print(impact_model.cal_temp_impact('JAVA', 0, 10.75 * 60 * 60 * 1000))
+print(impact_model.cal_temp_impact('JAVA', 0, 10))
