@@ -20,52 +20,49 @@ class TradingSimulation:
         self.stock = stock
         self.date = date
         self.total_shares = total_shares
-        self.volume_model = { # to be changed
-            '09:30-10:00': 0.17,
-            '10:00-10:30': 0.12,
-            '10:30-11:00': 0.10,
-            '11:00-11:30': 0.08,
-            '11:30-12:00': 0.07,
-            '12:00-12:30': 0.06,
-            '12:30-13:00': 0.06,
-            '13:00-13:30': 0.07,
-            '13:30-14:00': 0.08,
-            '14:00-14:30': 0.09,
-            '14:30-15:00': 0.10,
-            '15:00-15:30': 0.13,
-            '15:30-16:00': 0.17
-        }
+        self.volume_model = VolumeEstimator()
+        self.remaining_shares = total_shares
 
     def load_data(self):
         trades_file = MyDirectories.getTradesDir() + f'/{self.date}/{self.stock}_trades.binRT'
-        quotes_file = MyDirectories.getQuotesDir() + f'/{self.date}/{self.stock}_quotes.binRQ'
         self.trades_reader = TAQTradesReader(trades_file)
-        self.quotes_reader = TAQQuotesReader(quotes_file)
 
-    def get_volume_percentage(self, time):
-        time_str = time.strftime('%H:%M')
-        for interval in self.volume_model:
-            start, end = interval.split('-')
-            if start <= time_str < end:
-                return self.volume_model[interval]
-        return 0
-
-    def trading_decision(self, current_time):
-        volume_percentage = self.get_volume_percentage(current_time)
+    def trading_decision(self, bin_idx):
+        # Get volume percentage for the current bin
+        bin_weights = self.volume_model.get_bin_estimates(use_static=True)
+        volume_percentage = bin_weights[bin_idx]
+        
+        # Calculate the number of shares to trade
         shares_to_trade = self.total_shares * volume_percentage
         return shares_to_trade
 
     def simulate_trading(self):
-        start_time = datetime.strptime('09:30', '%H:%M')
-        end_time = datetime.strptime('16:00', '%H:%M')
-        current_time = start_time
-        half_hour = timedelta(minutes=30)
-        
+        self.volume_model.init_next_day(self.date)
         trading_decisions = []
-
-        while current_time < end_time:
-            shares_to_trade = self.trading_decision(current_time)
-            trading_decisions.append((current_time.strftime('%H:%M'), shares_to_trade))
-            current_time += half_hour
         
+        for bin_idx in range(13):
+            # Get the volume for the current bin
+            bin_volume = self.get_bin_volume(bin_idx)
+            
+            # Update volume model with the bin volume
+            self.volume_model.save_bin_volume(bin_volume)
+            
+            # Make trading decision for the current bin
+            shares_to_trade = self.trading_decision(bin_idx)
+            
+            # Ensure we don't trade more than the remaining shares
+            shares_to_trade = min(shares_to_trade, self.remaining_shares)
+            self.remaining_shares -= shares_to_trade
+            
+            # Record the decision
+            time_str = (datetime.strptime('09:30', '%H:%M') + timedelta(minutes=30*bin_idx)).strftime('%H:%M')
+            trading_decisions.append((time_str, shares_to_trade))
+            
         return pd.DataFrame(trading_decisions, columns=['time', 'shares_to_trade'])
+
+
+    def get_bin_volume(self, bin_idx):
+        # Placeholder method to get bin volume, should be implemented to read from trades data
+        # This method should calculate the total volume in the specified bin
+        # For now, we return a dummy volume
+        return 100000  # Dummy volume value, replace with actual calculation
