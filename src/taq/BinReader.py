@@ -2,7 +2,6 @@ import gzip
 import struct
 from collections import deque
 
-
 class BinReader(object):
     def __init__(self, filePathName, conversionFmt, bufSizeInRecs):
         self._last = None

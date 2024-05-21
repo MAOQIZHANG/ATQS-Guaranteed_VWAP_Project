@@ -1,6 +1,13 @@
 import unittest
 import os
 import numpy as np
+import sys
+
+src_path = 'src'
+
+# Add the src folder to the system path
+if src_path not in sys.path:
+    sys.path.append(src_path)
 
 from taq import MyDirectories
 from taq.TAQTradesReader import TAQTradesReader
