@@ -1,4 +1,5 @@
 import numpy as np
+from pandas import isna
 import scipy.optimize as opt
 
 
@@ -28,21 +29,49 @@ class VolumeEstimator:
             self.daily_weights = BASE_WEIGHTS
         else:
             self.daily_weights = self.estimate_daily_bin_weights()
-        self.total_volume = self.estimate_daily_total_volume()
+        self.traded_weights = np.zeros_like(self.daily_weights)
+        self.total_volume_pred = self.estimate_daily_total_volume()
         
     
-    def get_bin_estimates(self, use_static=True):
+    def get_trading_rate(self, use_static=True):
         '''
-            Return: bin volume weights of the day
+            trading model.
         '''
-        if use_static:
-            return self.daily_weights
+        if use_static or len(self.dailyBinVolumes) == 0:
+            self.traded_weights = self.daily_weights
         else:
-            if len(self.dailyBinVolumes) == 0:
-                return self.daily_weights
+            if self.binIndex == 0:
+                self.traded_weights[0] = self.daily_weights[0]
             else:
-                pass
-        
+                volumes_traded = np.sum(self.day_volume)
+                traded = volumes_traded / self.total_volume_pred
+                traded_pred = np.sum(self.daily_weights[: self.binIndex])
+                delta = traded - traded_pred
+                # adjust trading rate
+                next_weight = self.trading_model(delta)
+                # record trade
+                self.traded_weights[self.binIndex] = next_weight
+
+        return self.traded_weights
+
+
+    def trading_model(self, delta):
+        # next trading rate according to original schedule
+        pctg_traded = np.sum(self.traded_weights)
+        pctg_remain = 1.0 - pctg_traded
+        weights_to_trade = self.daily_weights[self.binIndex: ]
+        weights_to_trade = weights_to_trade / np.sum(weights_to_trade) * pctg_remain
+        w_next = weights_to_trade[0]
+        if self.binIndex == 12:
+            return w_next
+        # adjust trading rate
+        factor = np.arctanh(-delta) + 1
+        if np.isnan(factor):
+            factor = 1.0
+        factor = np.clip(factor, 0.9, 1.1)
+        w_next *= factor
+        return w_next
+    
     
     def save_bin_volume(self, bin_volume):
         ''' save bin volume
@@ -74,8 +103,8 @@ class VolumeEstimator:
             bounds = ((0.0, 1.0),),
             options = {"maxiter": 100, "disp": False}
         )
-        print(res.x)
-        V = self.EWMA(np.array(self.daily_total_volumes), res.x)
+        k = res.x
+        V = self.EWMA(np.array(self.daily_total_volumes), k)
         return V[-1]
     
     def EWMA(self, volumes, k):
