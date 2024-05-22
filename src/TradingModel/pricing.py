@@ -1,15 +1,13 @@
 import numpy as np
 
 
-def ExecutionCost(h: np.array, bin_shares: np.array, bin_prices: np.array, vwap):
+def cal_premium(h: np.array, bin_shares: np.array, lambda_ = 10e-6):
     ''' Execution cost of the order.
             h: temporary impacts
             shares: Num. of shares traded in each bin
-            prices: price per share in each bin
-            vwap: vwap of the stock in the day
+            lambda_: risk aversion parameter
     '''
-    cost = np.abs(vwap * np.sum(bin_shares) - bin_prices * bin_shares)
-    impacts = h * bin_shares
-    E = cost + impacts
-    return E
+    P = np.sum(h * bin_shares / 2) + lambda_ * np.var(h)
+
+    return P
 
