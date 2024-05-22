@@ -4,7 +4,6 @@ Group members: Maoqi Zhang, Jiaying Chen, Yunlei Lu
 
 ## Project Overview
 #### 1. Impact Model
-add decay parameter (in paper)
 
 #### 2. Model Volume
 
