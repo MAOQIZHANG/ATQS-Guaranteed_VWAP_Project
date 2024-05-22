@@ -31,5 +31,9 @@ class Test_TradingSimulation(unittest.TestCase):
         total_traded_shares = results['shares_to_trade'].sum()
         self.assertAlmostEqual(total_traded_shares, self.total_shares, delta=1, msg="The total traded shares should approximately match the parent order size.")
 
+        # self.simulation.cal_temp_impact()
+        # print(self.simulation.get_premium())
+
+
 if __name__ == "__main__":
     unittest.main()

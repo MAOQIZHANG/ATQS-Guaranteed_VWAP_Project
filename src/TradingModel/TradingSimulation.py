@@ -13,6 +13,7 @@ from taq import MyDirectories
 from taq.TAQTradesReader import TAQTradesReader
 from taq.TAQQuotesReader import TAQQuotesReader
 from VolumeModel.VolumeEstimator import VolumeEstimator
+from impact_model import ImpactModel
 from datetime import datetime, timedelta
 
 class TradingSimulation:
@@ -22,6 +23,7 @@ class TradingSimulation:
         self.total_shares = total_shares
         self.volume_model = VolumeEstimator()
         self.remaining_shares = total_shares
+        self.impact_model = ImpactModel('Impact-Model-Matrix')
 
     def load_data(self):
         trades_file = MyDirectories.getTradesDir() + f'/{self.date}/{self.stock}_trades.binRT'
@@ -58,3 +60,27 @@ class TradingSimulation:
             if start_time <= ts < end_time:
                 volume += self.trades_reader.getSize(i)
         return volume
+    
+    def cal_temp_impact(self):
+        self.impact_model.read_data()
+        self.h = np.zeros(13)
+        for bin_idx in range(1, 13):
+            X = self.volume_model.day_volume[bin_idx - 1]
+            date_list = sorted(list(os.listdir(MyDirectories.getTradesDir())))
+            date_idx = date_list.index(self.date)
+            self.h[bin_idx] = self.impact_model.cal_temp_impact(self.stock, date_idx, X)
+    
+    def get_premium(self, lambda_ = 10e-6):
+        ''' Execution cost of the order.
+                h: temporary impacts
+                shares: Num. of shares traded in each bin
+                lambda_: risk aversion parameter
+        '''
+        bin_shares = np.zeros(13)
+        for bin_idx in range(13):
+            bin_shares[bin_idx] = self.trading_decision(bin_idx)
+
+        P = np.sum(self.h * bin_shares / 2) + lambda_ * np.var(self.h)
+
+        return P
+
