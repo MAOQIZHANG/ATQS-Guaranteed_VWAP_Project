@@ -34,24 +34,23 @@ class VolumeEstimator:
         
     
     def get_trading_rate(self, use_static=True):
-        '''
-            trading model.
-        '''
+        """
+        Trading Model
+        """
         if use_static or len(self.dailyBinVolumes) == 0:
             self.traded_weights = self.daily_weights
         else:
-            if self.binIndex == 0:
-                self.traded_weights[0] = self.daily_weights[0]
-            else:
-                volumes_traded = np.sum(self.day_volume)
-                traded = volumes_traded / self.total_volume_pred
-                traded_pred = np.sum(self.daily_weights[: self.binIndex])
-                delta = traded - traded_pred
-                # adjust trading rate
-                next_weight = self.trading_model(delta)
-                # record trade
-                self.traded_weights[self.binIndex] = next_weight
-
+            if 0 <= self.binIndex < self.numBuckets:  # Ensure index is within bounds
+                if self.binIndex == 0:
+                    self.traded_weights[0] = self.daily_weights[0]
+                else:
+                    volumes_traded = np.sum(self.day_volume)
+                    traded = volumes_traded / self.total_volume_pred
+                    traded_pred = np.sum(self.daily_weights[:self.binIndex])
+                    delta = traded - traded_pred
+                    next_weight = self.trading_model(delta)
+                    if 0 <= self.binIndex < self.numBuckets:  # Ensure index is within bounds again
+                        self.traded_weights[self.binIndex] = next_weight
         return self.traded_weights
 
 
@@ -60,6 +59,8 @@ class VolumeEstimator:
         pctg_traded = np.sum(self.traded_weights)
         pctg_remain = 1.0 - pctg_traded
         weights_to_trade = self.daily_weights[self.binIndex: ]
+        if len(weights_to_trade) == 0:
+            return 0
         weights_to_trade = weights_to_trade / np.sum(weights_to_trade) * pctg_remain
         w_next = weights_to_trade[0]
         if self.binIndex == 12:
