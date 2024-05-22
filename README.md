@@ -41,6 +41,8 @@ make install
 Dollar price is most important
 
 ### Unit Tests
+In tests. 
+All below see the documents.. 
 ### Formula for pricing a gauranteed VWAP contract
 ### Statistical Analysis of our volume model
 ### Statistical Analysis and proof Trading Model
